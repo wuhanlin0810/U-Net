@@ -1,31 +1,27 @@
 import torch
-import torch.nn as nn
 import torch.optim as optim
-
-class DoubleConv(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super(DoubleConv, self).__init__()
-        self.conv = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True)
-        )
-
-    def forward(self, x):
-        return self.conv(x)
+import torch.nn as nn
 
 class UNet(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(UNet, self).__init__()
+
+        # 编码器
         self.encoder = nn.Sequential(
-            DoubleConv(in_channels, 64),
-            nn.MaxPool2d(2),
-            DoubleConv(64, 128)
+            nn.Conv2d(in_channels, 64, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(64, 64, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2)
         )
+
+        # 解码器
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2),
-            DoubleConv(64, out_channels)
+            nn.Conv2d(64, 64, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(64, out_channels, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.ConvTranspose2d(out_channels, out_channels, kernel_size=2, stride=2)
         )
 
     def forward(self, x):
@@ -33,20 +29,17 @@ class UNet(nn.Module):
         x2 = self.decoder(x1)
         return x2
 
-# 定义超参数
-num_epochs = 100
-learning_rate = 0.01
-
 # 创建模型
 model = UNet(1, 1)
 criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-# 生成简单的toy数据
-x_train = torch.ones(10, 1, 128, 128)
-y_train = torch.ones(10, 1, 128, 128)
+# 生成随机数据作为示例
+x_train = torch.randn(10, 1, 128, 128)
+y_train = torch.randn(10, 1, 128, 128)
 
 # 训练模型
+num_epochs = 10
 for epoch in range(num_epochs):
     optimizer.zero_grad()
     outputs = model(x_train)
