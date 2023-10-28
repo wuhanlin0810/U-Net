@@ -1,4 +1,4 @@
-# 本地U-Net
+# 本地搭建U-Net
 ## 本地环境配置  
 版本环境：python3.9  
 终端输入：conda create --name myenv python=3.9
