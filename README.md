@@ -4,4 +4,6 @@
 终端输入：conda create --name myenv python=3.9
 
 PyTorch下载  
-终端输入：conda install pytorch::pytorch torchvision torchaudio -c pytorch
+终端输入：conda install pytorch::pytorch torchvision torchaudio -c pytorch  
+
+由于使用了随机生成的数据导致loss较大
